@@ -5,21 +5,19 @@ using System.Net;
 
 namespace SongRequest.Handlers
 {
-    public class IndexHandler : StaticHandler
-    {
-        public IndexHandler(Func<string, Stream> resourceGetter) :
-            base(resourceGetter)
-        {
-        }
+	public class IndexHandler : StaticHandler
+	{
+		public IndexHandler(Func<string, Stream> resourceGetter) :
+			base(resourceGetter)
+		{
+		}
 
-        public override void Process(HttpListenerRequest request, HttpListenerResponse response)
-        {
-            SongPlayerFactory.GetConfigFile();
+		public override void Process(HttpListenerRequest request, HttpListenerResponse response)
+		{
+			string text = Get("index.htm");
+			response.ContentType = "text/html";
 
-            string text = Get("index.htm");
-            response.ContentType = "text/html";
-
-            WriteUtf8String(response.OutputStream, text);
-        }
-    }
+			WriteUtf8String(response.OutputStream, text);
+		}
+	}
 }
