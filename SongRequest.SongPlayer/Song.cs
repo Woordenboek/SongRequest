@@ -27,8 +27,10 @@ namespace SongRequest.SongPlayer
             {
                 if (_id == null)
                 {
-                    SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider();
-                    _id = BitConverter.ToString(sha1.ComputeHash(Encoding.UTF8.GetBytes(FileName))).Replace("-", "");
+					using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider())
+					{
+						_id = BitConverter.ToString(sha1.ComputeHash(Encoding.UTF8.GetBytes(FileName))).Replace("-", "");
+					}
                 }
 
                 return _id;
@@ -344,8 +346,15 @@ namespace SongRequest.SongPlayer
                 image = null;
             }
 
-            if (image != null)
-                return CreateThumbnail(image, maxSize);
+			if (image != null)
+			{
+				byte[] thumbnailBytes = CreateThumbnail(image, maxSize);
+
+				image.Dispose();
+				image = null;
+
+				return thumbnailBytes;
+			}
 
             return null;
         }
@@ -374,7 +383,6 @@ namespace SongRequest.SongPlayer
             }
 
             System.Drawing.Image thumbnail = image.GetThumbnailImage(width, height, null, IntPtr.Zero);
-            image.Dispose();
 
             byte[] bytes;
             using (MemoryStream stream = new MemoryStream())

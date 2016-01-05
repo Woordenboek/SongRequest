@@ -9,7 +9,7 @@ namespace SongRequest.Config
     ///   [section "subsection"] (subsection is case sensitive)
     ///   or
     ///   [section.subsection] (subsection is case insensitive)
-    ///   
+    ///
     ///   Case insensitive sections are deprecated. Dot separated subsections are treated
     ///   as case insensitive only when loaded from config file. Dot separated subsections
     ///   added from code, are treated as case sensitive.
@@ -37,7 +37,7 @@ namespace SongRequest.Config
                 var subSectionIndex = name.IndexOf('.');
 
                 if (subSectionIndex < 1)
-                    throw new Exception("Invalid section name: " + name);
+                    throw new ConfigException("Invalid section name: " + name);
 
                 SectionName = name.Substring(0, subSectionIndex).Trim();
                 SubSection = name.Substring(subSectionIndex + 1).Trim();
@@ -54,7 +54,7 @@ namespace SongRequest.Config
 
         internal static string UnescapeString(string value)
         {
-            // The .gitconfig escapes some character sequences -> 
+            // The .gitconfig escapes some character sequences ->
             // \" = "
             // \\ = \
             return value.Replace("\\\"", "\"").Replace("\\\\", "\\");
@@ -67,7 +67,7 @@ namespace SongRequest.Config
 
             path = path.Trim();
 
-            if (path.StartsWith("\\\\")) //for using unc paths -> these need to be backward slashes
+            if (path.StartsWith("\\\\", StringComparison.Ordinal)) //for using unc paths -> these need to be backward slashes
                 path = path.Replace("\\", "\\\\");
             else //for directories -> git only supports forward slashes
                 path = path.Replace('\\', '/');

@@ -26,6 +26,9 @@ namespace SongRequest.Handlers
                     SongPlayerFactory.GetConfigFile().GetValue("server.clients").ContainsOrdinalIgnoreCase(requesterName);
         }
 
+		private static DateTime _lastClean = DateTime.Now.AddHours(-1);
+		private static object _lastCleanLock = new object();
+
         public override void Process(HttpListenerRequest request, HttpListenerResponse response)
         {
             string[] actionPath = request.RawUrl.Split(new[] { '/' }, StringSplitOptions.RemoveEmptyEntries);
@@ -72,6 +75,17 @@ namespace SongRequest.Handlers
                             }
                             break;
                     }
+
+					// clean up thumbs
+					lock(_lastCleanLock)
+					{
+						if (_lastClean.AddHours(1) < DateTime.Now)
+						{
+							ImageHelper.CleanBuffer();
+							_lastClean = DateTime.Now;
+						}
+					}
+
                     break;
                 case "playlist":
                     {

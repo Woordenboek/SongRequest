@@ -6,13 +6,13 @@ using System.Text;
 
 namespace SongRequest
 {
-    public class Dispatcher
+    public static class Dispatcher
     {
         private static Dictionary<string, IHandler> _mappings = new Dictionary<string, IHandler>(StringComparer.OrdinalIgnoreCase)
         {
             { string.Empty, new IndexHandler(typeof(Dispatcher).Assembly.GetManifestResourceStream) },
             { "static", new StaticHandler(typeof(Dispatcher).Assembly.GetManifestResourceStream) },
-            { "dynamic", new DynamicHandler() },            
+            { "dynamic", new DynamicHandler() },
             { "favicon.ico", new FaviconHandler() }
         };
 

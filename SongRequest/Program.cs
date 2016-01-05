@@ -16,7 +16,8 @@ namespace SongRequest
         private static string host;
         private static int port;
 
-        static void Main(string[] args)
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args")]
+		static void Main(string[] args)
         {
             try
             {

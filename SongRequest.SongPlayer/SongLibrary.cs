@@ -33,6 +33,7 @@ namespace SongRequest.SongPlayer
 			return values;
 		}
 
+		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
 		public SongLibrary()
 		{
 			_songs = new Dictionary<string, Song>(StringComparer.OrdinalIgnoreCase);
@@ -224,7 +225,7 @@ namespace SongRequest.SongPlayer
 								}
 								else
 								{
-									throw new Exception(string.Format("Songs saved in unknown type '{0}'!", fromLibrary.GetType().Name));
+									throw new SongPlayerException(string.Format("Songs saved in unknown type '{0}'!", fromLibrary.GetType().Name));
 								}
 
 								// can't be dirty when just deserialized...
@@ -469,7 +470,6 @@ namespace SongRequest.SongPlayer
 			Song song;
 
 			bool fixErrors = DateTime.Now > _lastFixErrors + TimeSpan.FromMinutes(2);
-			List<ManualResetEvent> doneEvents = new List<ManualResetEvent>();
 
 			Config.ConfigFile config = SongPlayerFactory.GetConfigFile();
 			string[] extensionsArray = config.GetValue("library.extensions").Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries)
