@@ -27,13 +27,49 @@ namespace SongRequest.SongPlayer
             {
                 if (_id == null)
                 {
-					using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider())
-					{
-						_id = BitConverter.ToString(sha1.ComputeHash(Encoding.UTF8.GetBytes(FileName))).Replace("-", "");
-					}
+                    using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider())
+                    {
+                        _id = BitConverter.ToString(sha1.ComputeHash(Encoding.UTF8.GetBytes(FileName))).Replace("-", "");
+                    }
                 }
 
                 return _id;
+            }
+        }
+
+        private static HashSet<string> _tagLibExtensions = new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+        {
+            ".mp3",
+            ".m2a",
+            ".mp2",
+            ".mp1"
+        };
+
+        private static bool CanReadTagsForSong(Song song)
+        {
+            if (_tagLibExtensions.Contains(song.Extension))
+                return true;
+
+            return false;
+        }
+
+        public bool CanReadTags
+        {
+            get
+            {
+                return CanReadTagsForSong(this);
+            }
+        }
+
+        public bool IsInfinite
+        {
+            get
+            {
+                if (string.Equals(".m3u", Extension, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(".m3u8", Extension, StringComparison.OrdinalIgnoreCase))
+                    return true;
+
+                return false;
             }
         }
 
@@ -299,16 +335,19 @@ namespace SongRequest.SongPlayer
             {
                 if (File.Exists(FileName))
                 {
-                    // try embedded file
-                    using (TagLib.File taglibFile = TagLib.File.Create(FileName))
+                    if (CanReadTags)
                     {
-                        if (taglibFile.Tag.Pictures.Length >= 1)
+                        // try embedded file
+                        using (TagLib.File taglibFile = TagLib.File.Create(FileName))
                         {
-                            TagLib.IPicture picture = taglibFile.Tag.Pictures[0];
-
-                            if (picture.Data != null && picture.Data.Data != null && picture.Data.Data.Length > 0)
+                            if (taglibFile.Tag.Pictures.Length >= 1)
                             {
-                                thumbnailData = CreateThumbnail(picture.Data.Data, size);
+                                TagLib.IPicture picture = taglibFile.Tag.Pictures[0];
+
+                                if (picture.Data != null && picture.Data.Data != null && picture.Data.Data.Length > 0)
+                                {
+                                    thumbnailData = CreateThumbnail(picture.Data.Data, size);
+                                }
                             }
                         }
                     }
@@ -346,15 +385,15 @@ namespace SongRequest.SongPlayer
                 image = null;
             }
 
-			if (image != null)
-			{
-				byte[] thumbnailBytes = CreateThumbnail(image, maxSize);
+            if (image != null)
+            {
+                byte[] thumbnailBytes = CreateThumbnail(image, maxSize);
 
-				image.Dispose();
-				image = null;
+                image.Dispose();
+                image = null;
 
-				return thumbnailBytes;
-			}
+                return thumbnailBytes;
+            }
 
             return null;
         }
