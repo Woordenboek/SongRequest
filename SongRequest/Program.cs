@@ -16,12 +16,32 @@ namespace SongRequest
         private static string host;
         private static int port;
 
-		[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args")]
-		static void Main(string[] args)
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA1801:ReviewUnusedParameters", MessageId = "args")]
+        static void Main(string[] args)
         {
             try
             {
-                Run();
+                Run().Wait();
+            }
+            catch (AggregateException ex)
+            {
+                if (ex.InnerException is HttpListenerException && ((HttpListenerException)ex.InnerException).ErrorCode == 5)
+                {
+                    string username = Environment.GetEnvironmentVariable("USERNAME");
+                    string userdomain = Environment.GetEnvironmentVariable("USERDOMAIN");
+
+                    Console.SetCursorPosition(0, Console.WindowHeight - 10);
+                    Console.WriteLine("You need to run the following command (as admin):");
+                    Console.WriteLine("  netsh http add urlacl url={0} user={1}\\{2} listen=yes", Prefix, userdomain, username);
+                    Console.SetCursorPosition(0, 0);
+                }
+                else
+                {
+                    Console.WriteLine();
+                    Console.WriteLine();
+                    Console.WriteLine(ex);
+                    Console.ReadLine();
+                }
             }
             catch (HttpListenerException ex)
             {
@@ -60,8 +80,11 @@ namespace SongRequest
             }
         }
 
-        private async static void Run()
+        private async static Task Run()
         {
+            // list of tasks
+            List<Task> tasks = new List<Task>();
+
             Console.Clear();
             DrawArt();
 
@@ -93,8 +116,6 @@ namespace SongRequest
                 int maximumNumberOfTasks = 4 * Environment.ProcessorCount;
                 Program_LastRequestChanged(string.Format("Asynchronous handles a maximum of {0} requests.", maximumNumberOfTasks));
 
-                // list of tasks
-                List<Task> tasks = new List<Task>();
 
                 using (SemaphoreSlim semaphore = new SemaphoreSlim(maximumNumberOfTasks, maximumNumberOfTasks))
                 {
@@ -134,9 +155,9 @@ namespace SongRequest
                         }));
                     }
                 }
-
-                await Task.WhenAll(tasks);
             }
+
+            await Task.WhenAll(tasks);
         }
 
         static object consoleLock = new object();
