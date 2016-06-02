@@ -237,8 +237,9 @@ p {
 .volumeButton {
     width: 5em;
     height: 5em;
-    -ms-word-wrap: break-word;
-    word-wrap: break-word;
+    white-space: normal;
+    -ms-word-wrap: normal;
+    word-wrap: normal;
 }
 
 .playinfo {
