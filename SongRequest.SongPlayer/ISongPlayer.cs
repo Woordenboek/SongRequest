@@ -37,7 +37,7 @@ namespace SongRequest.SongPlayer
         /// <summary>
         /// Get image stream
         /// </summary>
-        MemoryStream GetImageStream(string tempId, bool large);
+        MemoryStream GetImageStream(string tempId, int size);
 
         /// <summary>
         /// Play queue

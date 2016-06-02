@@ -288,9 +288,8 @@ namespace SongRequest.SongPlayer
             return FileName;
         }
 
-        public MemoryStream GetImageStream(bool large)
+        public MemoryStream GetImageStream(int size)
         {
-            int size = large ? 300 : 25;
             FileInfo fileInfo = new FileInfo(FileName);
 
             List<FileInfo> coverFiles = new List<FileInfo>();

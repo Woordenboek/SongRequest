@@ -268,9 +268,9 @@ namespace SongRequest.SongPlayer
             }
         }
 
-        public MemoryStream GetImageStream(string tempId, bool large)
+        public MemoryStream GetImageStream(string tempId, int size)
         {
-            return _songLibrary.GetImageStream(tempId, large);
+            return _songLibrary.GetImageStream(tempId, size);
         }
 
         /// <summary>

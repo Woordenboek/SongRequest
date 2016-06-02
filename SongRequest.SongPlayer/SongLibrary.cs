@@ -622,14 +622,14 @@ namespace SongRequest.SongPlayer
             }
         }
 
-        public MemoryStream GetImageStream(string tempId, bool large)
+        public MemoryStream GetImageStream(string tempId, int size)
         {
             Song song = GetSong(tempId);
 
             if (song == null)
                 return null;
 
-            return song.GetImageStream(large);
+            return song.GetImageStream(size);
         }
 
         public IEnumerable<Song> GetSongs(string filter, string sortBy, bool ascending)
